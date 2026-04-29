@@ -31,7 +31,9 @@ def save_history(data):
 order_history = load_history()
 
 def generate_hmac(method, path, query=""):
-    dt = datetime.utcnow().strftime('%y%m%d') + 'T' + datetime.utcnow().strftime('%H%M%S') + 'Z'
+    import time
+    gmtime = time.gmtime()
+    dt = time.strftime('%y%m%d', gmtime) + 'T' + time.strftime('%H%M%S', gmtime) + 'Z'
     message = dt + method + path + query
     signature = hmac.new(
         SECRET_KEY.encode('utf-8'),
