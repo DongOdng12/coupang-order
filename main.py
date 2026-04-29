@@ -1,5 +1,4 @@
 import os
-import time
 import hmac
 import hashlib
 import json
@@ -32,8 +31,7 @@ def save_history(data):
 order_history = load_history()
 
 def generate_hmac(method, path, query=""):
-    os.environ['TZ'] = 'GMT+0'
-    dt = time.strftime('%y%m%d') + 'T' + time.strftime('%H%M%S') + 'Z'
+    dt = datetime.utcnow().strftime('%y%m%d') + 'T' + datetime.utcnow().strftime('%H%M%S') + 'Z'
     message = dt + method + path + query
     signature = hmac.new(
         SECRET_KEY.encode('utf-8'),
