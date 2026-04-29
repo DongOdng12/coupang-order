@@ -102,11 +102,11 @@ def get_orders():
 
     path = f"/v2/providers/openapi/apis/api/v4/vendors/{VENDOR_ID}/ordersheets"
     params = {
-        "createdAtFrom": date_from,
-        "createdAtTo":   date_to,
-        "status":        status,
-        "maxPerPage":    100,
-    }
+    "createdAtFrom": date_from,
+    "createdAtTo":   date_to,
+    "status":        status,
+    "maxPerPage":    "100",
+}
     try:
         data = coupang_get(path, params)
         orders = data.get("data", [])
