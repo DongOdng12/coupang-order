@@ -76,7 +76,22 @@ def config():
         "hasAccessKey": bool(ACCESS_KEY),
         "hasSecretKey": bool(SECRET_KEY),
     })
-
+@app.route("/api/test-auth")
+def test_auth():
+    import time
+    path = f"/v2/providers/openapi/apis/api/v4/vendors/{VENDOR_ID}/ordersheets"
+    params = {"createdAtFrom": "2026-03-01", "createdAtTo": "2026-04-30", "status": "INSTRUCT", "maxPerPage": "100"}
+    query = urlencode(params)
+    dt = time.strftime('%y%m%d', time.gmtime()) + 'T' + time.strftime('%H%M%S', time.gmtime()) + 'Z'
+    message = dt + "GET" + path + query
+    sig = hmac.new(SECRET_KEY.encode('utf-8'), message.encode('utf-8'), hashlib.sha256).hexdigest()
+    auth = "CEA algorithm=HmacSHA256, access-key=" + ACCESS_KEY + ", signed-date=" + dt + ", signature=" + sig
+    return jsonify({
+        "datetime": dt,
+        "message": message,
+        "auth": auth,
+        "url": BASE_URL + path + "?" + query
+    })
 # ── 주문 조회 (상태별) ─────────────────────────────────────────
 # status: ACCEPT(신규주문), INSTRUCT(상품준비중), DEPARTURE(배송중), DELIVERING(배송중2), FINAL_DELIVERY(배송완료)
 @app.route("/api/orders")
