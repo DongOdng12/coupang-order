@@ -85,6 +85,12 @@ def get_orders():
     date_to    = request.args.get("to",     today())
 
     path = f"/v2/providers/openapi/apis/api/v4/vendors/{VENDOR_ID}/ordersheets"
+params = {
+    "createdAtFrom": date_from,
+    "createdAtTo":   date_to,
+    "status":        status,
+    "maxPerPage":    100,
+}
     params = {
         "createdAtFrom": date_from,
         "createdAtTo":   date_to,
@@ -130,7 +136,8 @@ def get_orders():
                 })
         return jsonify({"ok": True, "count": len(result), "orders": result})
     except Exception as e:
-        return jsonify({"ok": False, "error": str(e)}), 500
+        import traceback
+        return jsonify({"ok": False, "error": str(e), "detail": traceback.format_exc()}), 500
 
 # ── 발주 완료 기록 ────────────────────────────────────────────
 @app.route("/api/orders/mark-downloaded", methods=["POST"])
