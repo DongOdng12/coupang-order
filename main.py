@@ -34,17 +34,20 @@ order_history = load_history()
 def make_auth(method, path, query=""):
     dt = datetime.utcnow().strftime("%y%m%dT%H%M%SZ")
     message = dt + method + path + query
-    sig = hmac.new(SECRET_KEY.encode(), message.encode(), hashlib.sha256).hexdigest()
+    sig = hmac.new(
+        SECRET_KEY.encode("utf-8"),
+        message.encode("utf-8"),
+        hashlib.sha256
+    ).hexdigest()
     auth = f"CEA algorithm=HmacSHA256, access-key={ACCESS_KEY}, signed-date={dt}, signature={sig}"
     return auth, dt
 
 def coupang_get(path, params=None):
-    query = urlencode(params) if params else ""
+    query = urlencode(sorted(params.items())) if params else ""
     auth, dt = make_auth("GET", path, query)
     url = BASE_URL + path + ("?" + query if query else "")
     req = urllib.request.Request(url, headers={
         "Authorization": auth,
-        "X-Requested-By": VENDOR_ID,
         "Content-Type": "application/json;charset=UTF-8",
     })
     with urllib.request.urlopen(req, timeout=15) as resp:
